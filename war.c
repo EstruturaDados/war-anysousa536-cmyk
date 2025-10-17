@@ -31,7 +31,6 @@
 
 // --- Função Principal (main) ---
 // Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
-int main() {
     // 1. Configuração Inicial (Setup):
     // - Define o locale para português.
     // - Inicializa a semente para geração de números aleatórios com base no tempo atual.
@@ -50,9 +49,6 @@ int main() {
 
     // 3. Limpeza:
     // - Ao final do jogo, libera a memória alocada para o mapa para evitar vazamentos de memória.
-
-    return 0;
-}
 
 // --- Implementação das Funções ---
 
@@ -138,6 +134,7 @@ int main() {
     printf("---------------------------------------------\n"); 
     printf("Cadastro de Territorios:\n");
     printf("                                             \n");
+    
     //laço principal
     for(int i = 0; i < TERRITORIOS_SUP; i++)
     {
