@@ -103,6 +103,7 @@
 #define TERRITORIOS_SUP 5
 #define TAM_NOME 30
 #define TAM_COR 10
+#define MISSAO 5
 
 // Definição da estrutura territorio
 struct territorio {
@@ -117,6 +118,15 @@ typedef struct ataque {
     int indice_defensor;
     char resultado[20];
 } ataque;
+
+//prototipos das funções
+void limparBuffer();
+void listardadosterritorios(struct territorio territorios[], int tamanho);
+void ataqueterritorio(struct territorio *atacante, struct territorio* defensor);
+void atribuirmissao(char* destino, char* missoes[], int totalMissoes);
+void verificarMissao(char* missao, struct territorio * mapa, int tamanho);
+void liberarMemoria(struct territorio *territorios, struct ataque *ataqueterritorios);
+int exibirmenu();
 
 // função pára limpar o buffer de entrada
 void limparBuffer() {
@@ -133,6 +143,7 @@ void listardadosterritorios(struct territorio territorios[], int tamanho) {
     }
         printf("                                             \n");
 }
+
 //Função de ataque
 void ataqueterritorio(struct territorio *atacante, struct territorio* defensor) {
 
@@ -175,6 +186,40 @@ void ataqueterritorio(struct territorio *atacante, struct territorio* defensor) 
          getchar(); // Espera o usuário pressionar Enter
      }
 }
+
+//função atribuir missão
+void atribuirmissao(char* destino, char* missoes[], int totalMissoes) {
+    int indice = rand() % totalMissoes;
+    strcpy(destino, missoes[indice]);
+    printf("------------------------------------------\n");
+    printf("          MISSAO ATRIBUIDA                \n");
+    printf("------------------------------------------\n");
+    printf("Sua missao e conquistar o territorio: %s\n", destino);
+    printf("Pressione ENTER para continuar\n");
+    getchar(); // Espera o usuário pressionar Enter
+}
+
+//função verificar missão
+void verificarmissao(char* missao, struct territorio * mapa, int tamanho) {
+    printf("------------------------------------------\n");
+    printf("        VERIFICACAO DE MISSAO            \n");
+    printf("------------------------------------------\n");
+    int encontrada = 0;
+    for (int i = 0; i < tamanho; i++) {
+        if (strcmp(mapa[i].nome, missao) == 0 && mapa[i].tropas > 0) {
+            encontrada = 1;
+            break;
+        }
+    }
+    if (encontrada) {
+        printf("Missao cumprida! Parabens! Voce venceu o territorio %s.\n", missao);
+    } else {
+        printf("Missao nao cumprida. continue tentando! Voce nao venceu o territorio %s.\n", missao);
+    }
+    printf("Pressione ENTER para exibir o menu de opcoes\n");
+    getchar(); // Espera o usuário pressionar Enter
+}
+
 // Função principal 
 int main() {
     //declaração de variáveis
@@ -191,6 +236,7 @@ int main() {
 
     int totalterritorios = 0;
     int totalataques = 0;
+    int totalmissoes = 0;
     int opcao;
 
     //cabeçalho do programa
@@ -227,8 +273,9 @@ int main() {
         printf("============ MENU =============\n");
         printf("                             \n");
         printf("1. Listar dados do territorio\n");
-        printf("2. Realizar ataques\n");
-        printf("3. Exibir lista de ataques\n");
+        printf("2. Atribuir missao\n");
+        printf("3. Realizar ataques\n");
+        printf("4. Verificar missao\n");
         printf("0. Sair\n");
         printf("-----------------------------\n");
         printf("Escolha uma opcao: ");
@@ -240,7 +287,21 @@ int main() {
         case 1: // Listar dados dos territórios
             listardadosterritorios(territorios, TERRITORIOS_SUP);
             break;
-        case 2:// Realizar ataques
+        case 2: // Atribuir missão
+        {
+            char* missoes[MISSAO] = {
+                "Territorio 1",
+                "Territorio 2",
+                "Territorio 3",
+                "Territorio 4",
+                "Territorio 5"
+            };
+            char missao_atribuida[TAM_NOME];
+            atribuirmissao(missao_atribuida, missoes, MISSAO);
+            totalmissoes++;
+            break;
+        }   
+        case 3:// Realizar ataques
         {
             int atacante_idx, defensor_idx;
             printf("                             \n");
@@ -258,11 +319,15 @@ int main() {
             getchar(); // Espera o usuário pressionar Enter
             break;
         }
-        case 3:// Exibir lista de ataques
-            printf("Total de ataques realizados: %d\n", totalataques);
-            printf("Pressione ENTER para exibir o menu de opcoes\n");
-            getchar(); // Espera o usuário pressionar Enter
+        case 4: // Verificar missão
+        {
+            char missao_verificar[TAM_NOME];
+            printf("Digite o nome do territorio da sua missao para verificar: ");
+            fgets(missao_verificar, TAM_NOME, stdin);
+            missao_verificar[strcspn(missao_verificar, "\n")] = 0; 
+            verificarmissao(missao_verificar, territorios, TERRITORIOS_SUP);
             break;
+        }
         case 0:
             printf("Saindo do programa...\n");
             break;
@@ -272,9 +337,12 @@ int main() {
         }
 
     } while (opcao != 0);
+
+    // Função para liberar memória alocada
+void liberarMemoria(struct territorio *territorios, struct ataque *ataqueterritorios); {
     free(territorios);
     free(ataqueterritorios);
     printf("Memoria liberada. jogo encerrado com sucesso!\n");
     return 0;
-    
+    }
 }
